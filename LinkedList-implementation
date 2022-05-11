@@ -1,0 +1,281 @@
+// ############################## SINGLY LINKEDLIST ##############################
+// ###################### IMPLEMENTED BY SATYA NARYAN MISHRA #####################
+// ###############################################################################
+#include<stdio.h>
+#include<stdlib.h>
+#include<windows.h>
+void insertBegin();
+void insertEnd();
+void insertPos();
+void deleteBegin();
+void deleteEnd();
+void deletePos();
+void search();
+void reverse();
+void display();
+typedef struct Node{
+    int data;
+    struct Node* next;
+}node;
+
+struct Node* head=NULL;
+struct Node* tail=NULL;
+
+void main(){
+    int choice;
+    system("cls");
+    while(1){
+        printf("[ 1 ] INSERT AT BEGIN \n");
+        printf("[ 2 ] INSERT AT END \n");
+        printf("[ 3 ] INSERT AT POSITION \n");
+        printf("[ 4 ] DELETE AT BEGIN \n");
+        printf("[ 5 ] DELETE AT END \n");
+        printf("[ 6 ] DELETE AT POSITION \n");
+        printf("[ 7 ] SEARCHING \n");
+        printf("[ 8 ] REVERSE \n");
+        printf("[ 9 ] Display\n");
+        printf("[ 10 ] EXIT \n");
+        printf("ENTER YOUR CHOICE : ");
+        scanf("%d",&choice);
+        switch(choice){
+            case 1: insertBegin();
+                break;
+            case 2: insertEnd();
+                break;
+            case 3: insertPos();
+                break;
+            case 4: deleteBegin();
+                break;
+            case 5: deleteEnd();
+                break;
+            case 6: deletePos();
+                break;
+            case 7: search();
+                break;
+            case 8: reverse();
+                break;
+            case 9:  display();
+                break;
+            case 10:  exit(0);
+            default: printf("\n -- Invalid input..");
+        }
+        printf("\n");
+        system("pause");
+    }
+}
+
+void insertBegin(){
+    struct Node* newNode = (struct Node *) malloc(sizeof(struct Node));
+    printf("\nEnter your data : ");
+    scanf("%d",&newNode->data);
+    newNode->next=NULL;
+    if(head==NULL){
+        head=newNode;
+        tail=head;
+    }else{
+        newNode->next=head;
+        head=newNode;
+    }
+    printf("\n[** Node Inserted At Begining**]");
+}
+void insertEnd(){
+    struct Node* newNode = (struct Node *) malloc(sizeof(struct Node));
+    printf("\nEnter your data : ");
+    newNode->next=NULL;
+
+    scanf("%d",&newNode->data);
+    if(head==NULL){
+        head=newNode;
+        tail=head;
+    }else{
+        struct Node* curr = head;
+
+        // it will increase the our time complexity -- O(N)
+        // while(curr->next!=NULL)  curr=curr->next;
+        // curr->next=newNode;
+
+        //Optimize solution
+        tail->next=newNode;
+        tail=tail->next;
+    }
+    printf("\n[** Node Inserted At End**]");
+}
+void insertPos(){
+    int pos;
+    printf("Enter Position : ");
+    scanf("%d",&pos);
+    struct Node* curr = head;
+    int counter=0;
+    while(curr!=NULL){
+        counter++;
+        curr=curr->next;
+    }
+
+    //range boundary
+    if(pos>=1 && pos<=counter){
+        struct Node* newNode = (struct Node *) malloc(sizeof(struct Node));
+        printf("\nEnter your data : ");
+        scanf("%d",&newNode->data);
+        newNode->next=NULL;
+
+        //valid range
+        if(pos==1){
+            newNode->next=head;
+            head=newNode;
+        }else{
+            curr=head;
+             --pos;// this is for tracking previous node where you want to insert
+            while(--pos)curr=curr->next;
+            newNode->next=curr->next;
+            curr->next=newNode;
+        }
+        printf("[ Node Inserted ]\n");
+    }else{
+        //out of range
+        printf("Oops ! invalid position...\n");
+    }
+}
+void deleteBegin(){
+    if(head==NULL) printf(" Oops ! List is Empty...\n");
+    else{
+        struct Node* dummy=head;
+        head=head->next;
+        dummy->next = NULL;
+        free(dummy);
+    }
+    printf("Node Deleted ...\n");
+}
+void deleteEnd(){
+    if(head==NULL) printf(" Oops ! List is Empty...\n");
+    else{
+        if(head->next == NULL){
+            free(head);
+            free(tail);
+            head=NULL;
+            tail=NULL;
+        }
+        struct Node* curr=head,*dummy= tail;
+        while(curr->next->next!=NULL) curr=curr->next;
+        free(dummy);
+        tail=curr;
+        tail->next=NULL;
+    }
+    printf("Node Deleted ...\n");
+}
+void deletePos(){
+    int pos;
+    printf("Enter Position : ");
+    scanf("%d",&pos);
+    struct Node* curr = head;
+    int counter=0;
+    while(curr!=NULL){
+        counter++;
+        curr=curr->next;
+    }
+
+    //range boundary
+    if(pos>=1 && pos<=counter){
+        //valid range
+        if(pos==1){
+            free(head);
+            free(tail);
+            tail=head=NULL;
+        }else{
+            curr=head;
+             --pos;// this is for tracking previous node where you want to insert
+            while(--pos){curr=curr->next;}
+            // printf("%d ",curr->next->data);
+
+            struct Node* tmp=curr->next;
+            curr->next=curr->next->next;
+            if(curr->next==NULL) tail=curr; // last element handling
+            free(tmp);
+            // tail=curr;
+        }
+        printf("[ Node Deleted ]\n");
+    }else{
+        //out of range
+        printf("Oops ! invalid position...\n");
+    }
+}
+void search(){
+    int key;
+    printf("Enter key for searching : ");
+    scanf("%d",&key);
+    if(head==NULL) printf("Oops ! Empty List...\n");
+    else{
+        printf("\n");
+        struct Node* curr=head;
+        while(curr!=NULL){
+            if(curr->data==key) {
+                printf("Key is found\n");
+                break;
+            }
+            curr=curr->next;
+        }
+
+        if(curr==NULL){
+            printf("Key not found \n");
+        }
+    }
+}
+void reverse(){
+    if(head==NULL){
+        printf("Oops ! Empty list\n");
+    }else if(head->next==NULL){
+        printf("No Need to reverse ..\n");
+    }else if(head->next->next==NULL){
+        //if only two element exist
+        struct Node* dummy;
+        tail->next=head;
+        head->next=NULL;
+        
+        dummy=tail;
+        tail=head;
+        head=dummy;
+    } else{
+
+        //For all N number of nodes
+        struct Node* low=head;
+        struct Node* high=head->next;
+        struct Node* dummy=head->next->next;
+        // struct Node* curr=head;
+
+        while(dummy!=NULL){
+            // low->next=NULL;
+
+            high->next=low;
+            low=high;
+            high=dummy;
+
+            if(dummy->next==NULL){
+                high->next=low;
+                low=high;
+                break;
+            }
+            dummy=dummy->next;
+            // printf("%d ",dummy->data);
+        }
+
+        // dummy=head;
+        head->next=NULL;
+        tail=head;
+        head=high;
+        printf("Reversed List are : ");
+    }
+    display();
+    return;
+}
+
+void display(){
+    if(head==NULL) printf("Oops ! Empty List...\n");
+    else{
+        printf("\n");
+        struct Node* curr=head;
+        while(curr!=NULL){
+            if(curr->next!=NULL) printf("| %d |----> ",curr->data);
+            else printf("| %d |",curr->data);
+            curr=curr->next;
+        }
+    }
+}
